@@ -52,9 +52,12 @@ addMarkersAndCircles(questions);
 
 window.onload = function() {
   const userLocation = getUserLocation();
+  console.log("userlocation" + userLocation.lat + "---" + userLocation.lng)
+  
   if (userLocation) {
     // Calculate distance and bearing to the first location (Fråga 1 / location 1)
     const firstLocation = questions[0];
+    console.log("firstLocation" + firstLocation.latitude + "---" + firstLocation.longitude)
     const { distance, bearing } = calculateDistanceAndBearing(firstLocation.latitude, firstLocation.longitude, userLocation.lat, userLocation.lng);
     // Display distance and direction to the first location (Fråga 1 / location 1)
     displayDistanceAndDirection(distance, bearing);
@@ -66,10 +69,11 @@ window.onload = function() {
 let currentQuestionIndex = 0;
 
 function displayQuestion(questionObj, nextLocation, currentIndex) {
+  const container = document.getElementById("question-container");
+  
   console.log("Displaying question...");
   hideGifContainer();
-  const { question, image, answers, correctAnswer } = questionObj;
-  const container = document.getElementById("question-container");
+  const { question, image, answers, correctAnswer } = questionObj; 
   container.innerHTML = "";
   const questionElement = document.createElement("h2");
   questionElement.textContent = question;
@@ -103,7 +107,7 @@ function onMarkerDragEnd(e) {
   const newLatLng = e.target.getLatLng();
   startLatitude = newLatLng.lat;
   startLongitude = newLatLng.lng;
-
+  console.log(newLatLng)
   const nextLocation = questions[currentQuestionIndex];
   if (nextLocation) {
     const { distance, bearing } = calculateDistanceAndBearing(nextLocation.latitude, nextLocation.longitude, newLatLng.lat, newLatLng.lng);
@@ -124,14 +128,15 @@ function checkAnswer(selectedAnswer, correctAnswer, nextLocation, currentIndex) 
   selectedAnswer = selectedAnswer.trim();
 
   if (selectedAnswer === correctAnswer) {
-    totalPoints += questions[currentIndex].points; // Increment total points if the answer is correct
+    totalPoints += questions[currentIndex].points;
     alert("Rätt svar! Du har fått " + questions[currentIndex].points + " poäng.");
   } else {
     alert("Fel svar! 0 poäng.");
   }
 
   updateTotalPoints(totalPoints);
-
+  answeredQuestion = true;
+  document.getElementById("question-container").innerHTML = "";
   if (nextLocation && typeof nextLocation.latitude !== 'undefined' && typeof nextLocation.longitude !== 'undefined') {
     // Calculate distance and direction to the next location
     const userLocation = getUserLocation();
@@ -144,24 +149,22 @@ function checkAnswer(selectedAnswer, correctAnswer, nextLocation, currentIndex) 
     }
 
     // Move to the next location
-    goToNextQuestion(currentIndex);
+    //goToNextQuestion(currentIndex);
   } else {
     alert("Hittar inte nästa fråga");
   }
 
   showGifContainer();
 
-  // Check geofences only if the user hasn't already answered a question for the current location
-  if (!answeredQuestion) {
     checkGeofences(userLocation);
-  }
+
 }
 
 
 function displayDistanceAndDirection(distance, bearing) {
   const distanceElement = document.getElementById("distance");
   const directionElement = document.getElementById("direction");
-
+console.log(bearing)
   if (distanceElement && directionElement) {
     distanceElement.textContent = "Avstånd: " + distance.toFixed(2) + " meter";
     directionElement.textContent = "Nästa: " + getDirectionFromBearing(bearing);
@@ -198,7 +201,8 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 function getDirectionFromBearing(bearing) {
   const directions = ["Norrut", "Nordöst", "Österut", "Sydöst", "Söderut", "Sydväst", "Västerut", "Nordväst"];
-  const index = Math.round(bearing / 45) % 8;
+  const index = 2 //Math.round(bearing / 45) % 8;
+
   return directions[index];
 }
 
@@ -219,6 +223,7 @@ if (userLocation) {
 
 let displayNextQuestion = false;
 function checkGeofences(userLocation) {
+  
   let insideGeofence = false;
 
   for (let index = 0; index < questions.length; index++) {
@@ -226,13 +231,11 @@ function checkGeofences(userLocation) {
     const distance = calculateDistance(userLocation.lat, userLocation.lng, location.latitude, location.longitude);
 
     console.log(`Distance to location ${index + 1}:...${location.name}: ${distance} meters`);
-
     if (distance <= geofenceRadius) {
       insideGeofence = true;
       console.log("Inside geofence. Displaying question...");
       displayQuestion(location, questions[index + 1], index);
-      // answeredQuestion = false;
-      displayNextQuestion = true; // false
+      displayNextQuestion = true;
       break;
     }
   }

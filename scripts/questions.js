@@ -1,6 +1,6 @@
 export const questions = [
   {
-    name: "Frågaa 1",
+    name: "Fråga 1",
     latitude: 58.753123,
     longitude: 17.009413,
     question: "vad visas på bilden?",
