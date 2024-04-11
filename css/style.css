@@ -11,14 +11,12 @@ body {
   align-items: center;
 }
 @media only screen and (max-width: 600px) {
-    /* Adjust styles for smaller screens */
     #map {
-      height: 300px; /* Adjust height as needed */
+      height: 300px;
     }
     #question-container {
-      max-width: 90%; /* Adjust width as needed */
+      max-width: 90%; 
     }
-    /* Add more styles as needed */
   }
 #header {
   display: flex;
@@ -46,7 +44,8 @@ body {
 }
 
 #distance,
-#direction {
+#direction,
+#name {
   margin-bottom: 10px;
 }
 

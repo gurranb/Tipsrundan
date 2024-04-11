@@ -14,14 +14,16 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
+    <link rel="icon" href="data:,">
   </head>
   <body>
     <h1>Tipsrundan</h1>
     <div id="map"></div>
         <div id="info">
             <div id="total-points">Poäng: 0</div>
-            <div id="distance">Avstånd: *** meter</div>
-            <div id="direction">Riktning:</div>
+            <div id="name"></div>
+            <div id="distance"></div>
+            <div id="direction"></div>
         </div>
         <div id="gif-container">
             <img src="images/walkingguy.gif" alt="walking gif" id="walking-gif">
@@ -32,12 +34,8 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
+    
+
     <script type="module" src="./scripts/script.js"></script>
   </body>
 </html>
