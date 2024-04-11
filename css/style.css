@@ -37,6 +37,7 @@ body {
   margin-bottom: 20px;
   max-width: 600px;
   width: 100%;
+  margin-left: 10px;
 }
 
 #total-points {
@@ -53,7 +54,7 @@ body {
   font-size: 24px;
 }
 h1 {
-    font-size: 24px;
+  font-size: 24px;
   margin-top: 20px;
 }
 
@@ -63,18 +64,15 @@ button {
   color: #fff;
   border: none;
   cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
+  border-radius: 10px;
 }
 
 input[type="radio"] {
-  margin-right: 5px;
+  margin-top: 10px;
 }
 
 label {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 img {

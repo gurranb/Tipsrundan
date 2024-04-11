@@ -6,7 +6,6 @@ let startZoomLevel = 17;
 let totalPoints = 0;
 let currentLocationMarker;
 const geofenceRadius = 8;
-let userMarker;
 
 const map = L.map("map").setView([startLatitude, startLongitude], startZoomLevel);
 
@@ -45,42 +44,17 @@ addMarkersAndCircles(questions);
 
 // när sidan laddas
 window.onload = function() {
-  // kommentera in ifall GPS ska användas*
-  navigator.geolocation.getCurrentPosition(handleLocationSuccess, handleLocationError);
-
   // kommentera in vid TEST*
-
-  // const userLocation = getUserLocation();
+  const userLocation = getUserLocation();
   
-  // if (userLocation) {
-  //   const firstLocation = questions[0];
-  //   console.log("firstLocation" + firstLocation.latitude + "---" + firstLocation.longitude)
-  //   const { distance, bearing } = calculateDistanceAndBearing(firstLocation.latitude, firstLocation.longitude, userLocation.lat, userLocation.lng);
-  //   displayDistanceAndDirection(distance, bearing);
-  //   checkGeofences(userLocation);
-  // }
+  if (userLocation) {
+    const firstLocation = questions[0];
+    console.log("firstLocation" + firstLocation.latitude + "---" + firstLocation.longitude)
+    const { distance, bearing } = calculateDistanceAndBearing(firstLocation.latitude, firstLocation.longitude, userLocation.lat, userLocation.lng);
+    displayDistanceAndDirection(distance, bearing);
+    checkGeofences(userLocation);
+  }
 }
-
-// GPS kommentera ut ifall det ska testas*
-
-function handleLocationSuccess(position) {
-  const userLatitude = position.coords.latitude;
-  const userLongitude = position.coords.longitude;
-  const userLocation = { lat: userLatitude, lng: userLongitude };
-
-  const firstLocation = questions[0];
-  const { distance, bearing } = calculateDistanceAndBearing(firstLocation.latitude, firstLocation.longitude, userLocation.lat, userLocation.lng);
-  displayDistanceAndDirection(distance, bearing);
-  checkGeofences(userLocation);
-  map.locate({setView: true, maxZoom: 17});
-  // Add a marker representing the user's current location
-  userMarker = L.marker([userLatitude, userLongitude]).addTo(map);
-}
-
-function handleLocationError(error) {
-  console.error("Error getting user location:", error);
-}
-
 
 let currentQuestionIndex = 0;
 
@@ -261,19 +235,6 @@ function checkGeofences(userLocation) {
     console.log("Du är inte innanför något geofence.");
   }
 }
-
-function onLocationFound(e) {
-  const radius = e.accuracy;
-
-  L.marker(e.latlng)
-    .addTo(map)
-    .bindPopup("Du är " + radius + " meter från målet")
-    .openPopup();
-
-  L.circle(e.latlng, radius).addTo(map);
-}
-
-map.on("locationfound", onLocationFound);
 
 function hideGifContainer() {
   const gifContainer = document.getElementById("gif-container");
