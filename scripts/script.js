@@ -7,7 +7,7 @@ let startZoomLevel = 17;
 let totalPoints = 0;
 let currentLocationMarker;
 let userMarker;
-const geofenceRadius = 8;
+const geofenceRadius = 10;
 let currentQuestionIndex = 0;
 
 // ***kommentera in vid UTVECKLING***
@@ -49,9 +49,15 @@ addMarkersAndCircles(questions);
 
 // när sidan laddas
 window.onload = function() {
-  map.locate({setView: true, maxZoom: 16, watch:true, enableHighAccuracy: true});
+  map.locate({maxZoom: 16, watch:true, enableHighAccuracy: true});
   const userLocation = getUserLocation();
-  
+
+  map.on('locationfound', function(e) {
+    const userLatLng = e.latlng;
+    map.setView(userLatLng, startZoomLevel);
+  });
+
+
   if (userLocation) {
     const firstLocation = questions[0];
     console.log("firstLocation" + firstLocation.latitude + "---" + firstLocation.longitude)
