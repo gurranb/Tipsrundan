@@ -47,6 +47,7 @@ function addMarkersAndCircles(locations) {
 
 addMarkersAndCircles(questions);
 
+let centerMapOnLocation = true;
 // när sidan laddas
 window.onload = function() {
   map.locate({maxZoom: 16, watch:true, enableHighAccuracy: true});
@@ -54,7 +55,13 @@ window.onload = function() {
 
   map.on('locationfound', function(e) {
     const userLatLng = e.latlng;
-    map.setView(userLatLng, startZoomLevel);
+    if(centerMapOnLocation){
+      map.setView(userLatLng, startZoomLevel);
+    }
+    
+    map.on('movestart', function(e){
+      centerMapOnLocation = false;
+    })
   });
 
 
@@ -113,7 +120,6 @@ function onLocationFound(e) {
   const nextLocation = questions[currentQuestionIndex];
   if (nextLocation) {
     const { distance, bearing } = calculateDistanceAndBearing(nextLocation.latitude, nextLocation.longitude, newLatLng.lat, newLatLng.lng);
-
     displayDistanceAndDirection(distance, bearing);
     checkGeofences(newLatLng);
   }
@@ -123,8 +129,6 @@ function onLocationFound(e) {
     userMarker = L.marker(newLatLng).addTo(map);
   }
 }
-
-
 
 // ***kommentera in vid UTVECKLING***
 // currentLocationMarker.on("dragend", onMarkerDragEnd);
@@ -264,7 +268,6 @@ function getDirectionFromBearing(bearing) {
 }
 
 function checkGeofences(userLocation) {
-  
   let insideGeofence = false;
 
   for (let index = 0; index < questions.length; index++) {
@@ -272,11 +275,13 @@ function checkGeofences(userLocation) {
     const distance = calculateDistance(userLocation.lat, userLocation.lng, location.latitude, location.longitude);
 
 
-    if (distance <= geofenceRadius) {
+    if (distance <= geofenceRadius && !location.questionShown) {
       insideGeofence = true;
       console.log("Innanför ett geofence. Visar fråga...");
       displayQuestion(location, questions[index + 1], index);
     
+      location.questionShown = true;
+
       const distanceElement = document.getElementById("distance");
       const directionElement = document.getElementById("direction");
       distanceElement.textContent = "";
