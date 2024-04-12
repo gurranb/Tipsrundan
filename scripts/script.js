@@ -1,13 +1,18 @@
 import { questions } from "./questions.js";
 
-let startLatitude = 58.753139;
-let startLongitude = 17.007761;
+//***kommentera in vid UTVECKLING***
+// let startLatitude = 58.753139;
+// let startLongitude = 17.007761;
 let startZoomLevel = 17;
 let totalPoints = 0;
 let currentLocationMarker;
+let userMarker;
 const geofenceRadius = 8;
+let currentQuestionIndex = 0;
 
-const map = L.map("map").setView([startLatitude, startLongitude], startZoomLevel);
+// ***kommentera in vid UTVECKLING***
+// const map = L.map("map").setView([startLatitude, startLongitude], startZoomLevel);
+const map = L.map("map").setView([0, 0], startZoomLevel);
 
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
@@ -19,7 +24,7 @@ function setStartLocation() {
     map.removeLayer(currentLocationMarker);
   }
 
-  currentLocationMarker = L.marker([startLatitude, startLongitude], {
+  currentLocationMarker = L.marker([0, 0], {
     draggable: true
   }).addTo(map);
 }
@@ -44,7 +49,7 @@ addMarkersAndCircles(questions);
 
 // när sidan laddas
 window.onload = function() {
-  // kommentera in vid TEST*
+  map.locate({setView: true, maxZoom: 16});
   const userLocation = getUserLocation();
   
   if (userLocation) {
@@ -56,9 +61,79 @@ window.onload = function() {
   }
 }
 
-let currentQuestionIndex = 0;
+// ***kommentera in vid UTVECKLING***
 
-function displayQuestion(questionObj, nextLocation, currentIndex) {
+// function onMarkerDragEnd(e) {
+//   const newLatLng = e.target.getLatLng();
+//   startLatitude = newLatLng.lat;
+//   startLongitude = newLatLng.lng;
+//   const nextLocation = questions[currentQuestionIndex];
+//   if (nextLocation) {
+//     const { distance, bearing } = calculateDistanceAndBearing(nextLocation.latitude, nextLocation.longitude, newLatLng.lat, newLatLng.lng);
+
+//      displayDistanceAndDirection(distance, bearing);
+//      checkGeofences(newLatLng);
+//   }
+// }
+
+// function onLocationFound(e) {
+//   var radius = e.accuracy;
+
+//   L.marker(e.latlng).addTo(map)
+//       .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+//   L.circle(e.latlng, radius).addTo(map);
+// }
+
+function getUserLocation() {
+  if (currentLocationMarker) {
+    const latitude = currentLocationMarker.getLatLng().lat;
+    const longitude = currentLocationMarker.getLatLng().lng;
+    return { lat: latitude, lng: longitude };
+  } else {
+    return null;
+  }
+}
+
+const userLocation = getUserLocation();
+
+function onLocationFound(e) {
+  const newLatLng = e.latlng;
+  // ***kommentera in vid UTVECKLING***
+  // startLatitude = newLatLng.lat;
+  // startLongitude = newLatLng.lng;
+  const nextLocation = questions[currentQuestionIndex];
+  if (nextLocation) {
+    const { distance, bearing } = calculateDistanceAndBearing(nextLocation.latitude, nextLocation.longitude, newLatLng.lat, newLatLng.lng);
+
+    displayDistanceAndDirection(distance, bearing);
+    checkGeofences(newLatLng);
+  }
+  if (userMarker) {
+    userMarker.setLatLng(newLatLng);
+  } else {
+    userMarker = L.marker(newLatLng).addTo(map);
+  }
+}
+
+map.on('locationfound', onLocationFound);
+
+// ***kommentera in vid UTVECKLING***
+// currentLocationMarker.on("dragend", onMarkerDragEnd);
+
+async function fetchChuckNorris(){
+  try{
+    const response = await fetch("https://api.chucknorris.io/jokes/random");
+    const data = await response.json()
+    return data.value;
+  }
+  catch(error){
+    console.error("Kunde inte hämta data från chucknorris.io", error)
+    return "Något gick fel med skämtet"
+  }
+}
+
+async function displayQuestion(questionObj, nextLocation, currentIndex) {
   const container = document.getElementById("question-container");
   
   console.log("Visar frågan.");
@@ -93,22 +168,7 @@ function displayQuestion(questionObj, nextLocation, currentIndex) {
   container.appendChild(submitButton);
 }
 
-function onMarkerDragEnd(e) {
-  const newLatLng = e.target.getLatLng();
-  startLatitude = newLatLng.lat;
-  startLongitude = newLatLng.lng;
-  const nextLocation = questions[currentQuestionIndex];
-  if (nextLocation) {
-    const { distance, bearing } = calculateDistanceAndBearing(nextLocation.latitude, nextLocation.longitude, newLatLng.lat, newLatLng.lng);
-
-     displayDistanceAndDirection(distance, bearing);
-     checkGeofences(newLatLng);
-  }
-}
-
-currentLocationMarker.on("dragend", onMarkerDragEnd);
-
-function checkAnswer(selectedAnswer, correctAnswer, nextLocation, currentIndex) {
+async function checkAnswer(selectedAnswer, correctAnswer, nextLocation, currentIndex) {
   selectedAnswer = selectedAnswer.trim();
 
   if (selectedAnswer === correctAnswer) {
@@ -133,12 +193,13 @@ function checkAnswer(selectedAnswer, correctAnswer, nextLocation, currentIndex) 
       alert("Kunde inte hämta användarens plats.");
     }
   } else {
-    alert("Tipsrundan är slut");
+    const joke = await fetchChuckNorris();
+    alert("Du är färdig med tipsrundan! Här kommer ett litet Chuck Norris skämt som belöning! \n" + joke);
   }
 
   showGifContainer();
 
-    checkGeofences(userLocation);
+  checkGeofences(userLocation);
 }
 
 function displayDistanceAndDirection(distance, bearing) {
@@ -194,20 +255,6 @@ function getDirectionFromBearing(bearing) {
   return directions[reverseIndex];
 }
 
-function getUserLocation() {
-  if (currentLocationMarker) {
-    const latitude = currentLocationMarker.getLatLng().lat;
-    const longitude = currentLocationMarker.getLatLng().lng;
-    return { lat: latitude, lng: longitude };
-  } else {
-    return null;
-  }
-}
-
-const userLocation = getUserLocation();
-
-let displayNextQuestion = false;
-
 function checkGeofences(userLocation) {
   
   let insideGeofence = false;
@@ -221,8 +268,7 @@ function checkGeofences(userLocation) {
       insideGeofence = true;
       console.log("Innanför ett geofence. Visar fråga...");
       displayQuestion(location, questions[index + 1], index);
-      displayNextQuestion = true;
-
+    
       const distanceElement = document.getElementById("distance");
       const directionElement = document.getElementById("direction");
       distanceElement.textContent = "";
