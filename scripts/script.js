@@ -49,7 +49,7 @@ addMarkersAndCircles(questions);
 
 // när sidan laddas
 window.onload = function() {
-  map.locate({setView: true, maxZoom: 16});
+  map.locate({setView: true, maxZoom: 16, watch:true, enableHighAccuracy: true});
   const userLocation = getUserLocation();
   
   if (userLocation) {
@@ -97,6 +97,8 @@ function getUserLocation() {
 
 const userLocation = getUserLocation();
 
+map.on('locationfound', onLocationFound);
+
 function onLocationFound(e) {
   const newLatLng = e.latlng;
   // ***kommentera in vid UTVECKLING***
@@ -116,7 +118,7 @@ function onLocationFound(e) {
   }
 }
 
-map.on('locationfound', onLocationFound);
+
 
 // ***kommentera in vid UTVECKLING***
 // currentLocationMarker.on("dragend", onMarkerDragEnd);
