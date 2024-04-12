@@ -1,8 +1,10 @@
 export const questions = [
   {
     name: "Fråga 1",
-    latitude: 58.753123,
-    longitude: 17.009413,
+    // latitude: 58.753123,
+    // longitude: 17.009413,
+    latitude: 58.754024,
+    longitude: 16.987314,
     question: "vad visas på bilden?",
     image: "images/hippo.jpg",
     answers: ["Elefant", "Flodhäst", "Tiger"],
@@ -11,8 +13,10 @@ export const questions = [
   },
   {
     name: "Fråga 2",
-    latitude: 58.752424,
-    longitude: 17.006624,
+    // latitude: 58.752424,
+    // longitude: 17.006624,
+    latitude: 58.755029,
+    longitude: 16.987737,
     question: "Vad är huvudstaden i Sverige?",
     image: "images/city.jpg",
     answers: ["Stockholm", "Göteborg", "Malmö"],
@@ -91,8 +95,10 @@ export const questions = [
   },
   {
     name: "Fråga 10",
-    latitude: 58.751915,
-    longitude: 17.008825,
+    // latitude: 58.751915,
+    // longitude: 17.008825,
+    latitude: 58.754389,
+    longitude: 16.985180,
     question: "Vilken är den mest använda sökmotorn på internet?",
     image: "images/search.jpg",
     answers: ["Google", "Bing", "Yahoo"],
